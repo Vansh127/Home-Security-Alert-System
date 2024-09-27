@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f7fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #00796b;
+            color: white;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .weather {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .weather:hover {
+            transform: scale(1.02);
+        }
+        .weather img {
+            width: 60px;
+            height: 60px;
+            margin-right: 20px;
+        }
+        .weather h3 {
+            margin: 0;
+        }
+        .error {
+            color: red;
+        }
+        input[type="text"], button {
+            font-size: 18px;
+            padding: 12px 20px;
+            border-radius: 5px;
+            border: 1px solid #00796b;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Current Weather App</h1>
+</header>
+
+<div class="content" id="weather">
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button id="getWeatherBtn">Get Weather</button>
+    <div id="weatherInfo"></div>
+    <div class="error" id="errorMessage"></div>
+</div>
+
+<script>
+    const apiKey = '46f186c29f13d16c57470892b379761a';
+    document.getElementById('getWeatherBtn').addEventListener('click', function() {
+        const city = document.getElementById('cityInput').value;
+        const weatherApiUrl =` https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+        fetch(weatherApiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('City not found');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const weatherDiv = document.getElementById('weatherInfo');
+                const weatherCondition = data.weather[0].description;
+                const temperature = data.main.temp;
+                const humidity = data.main.humidity;
+                const windSpeed = data.wind.speed;
+                const icon = data.weather[0].icon;
+                const iconUrl =    `http://openweathermap.org/img/wn/${icon}.png`;
+
+                weatherDiv.innerHTML = `
+                    <div class="weather">
+                        <img src="${iconUrl}" alt="Weather Icon">
+                        <div>
+                            <h3>Weather in ${city}</h3>
+                            <p>Condition: ${weatherCondition}</p>
+                            <p>Temperature: ${temperature} °C</p>
+                            <p>Humidity: ${humidity}%</p>
+                            <p>Wind Speed: ${windSpeed} m/s</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('errorMessage').textContent = ''; // Clear error message
+            })
+            .catch(error => {
+                document.getElementById('weatherInfo').innerHTML = ''; // Clear previous weather data
+                document.getElementById('errorMessage').textContent = error.message; // Show error message
+            });
+    });
+</script>
+
+</body>
+</html>
