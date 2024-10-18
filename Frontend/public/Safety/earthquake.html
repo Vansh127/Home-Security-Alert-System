@@ -14,7 +14,7 @@
         }
 
         header {
-            background-color: #4CAF50;
+            background-color: #ff4d4d;
             color: white;
             text-align: center;
             padding: 20px;
@@ -33,7 +33,7 @@
         }
 
         .alert {
-            background-color: #56e856;
+            background-color: #ffe6e6;
             padding: 15px;
             border: 1px solid #ffcccc;
             border-radius: 5px;
@@ -131,6 +131,8 @@
 </div>
 
 <script>
+    let allEarthquakes = []; // Array to store all earthquakes
+
     // Function to calculate the distance between two points using the Haversine formula
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371; // Radius of the Earth in kilometers
@@ -141,7 +143,6 @@
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c; // Distance in kilometers
-        console.log(distance)
         return distance;
     }
 
@@ -157,9 +158,16 @@
                 .then(data => {
                     const alertsDiv = document.getElementById('alerts');
                     const earthquakes = data.features;
-                    const radius = 100; // Radius in kilometers
+                    const radius = 1000000; // Radius in kilometers
 
-                    earthquakes.forEach(earthquake => {
+                    // Sort earthquakes by time, most recent first
+                    earthquakes.sort((a, b) => b.properties.time - a.properties.time);
+
+                    // Store all earthquake data
+                    allEarthquakes = earthquakes;
+
+                    // Display each earthquake within the specified radius
+                    earthquakes.forEach((earthquake, index) => {
                         const quakeLat = earthquake.geometry.coordinates[1];
                         const quakeLon = earthquake.geometry.coordinates[0];
                         const mag = earthquake.properties.mag;
@@ -171,8 +179,7 @@
                         // Calculate distance between user's location and the earthquake
                         const distance = calculateDistance(userLat, userLon, quakeLat, quakeLon);
 
-                        // Display earthquakes within the specified radius
-                        if (distance >= radius) {
+                        if (distance <= radius) {
                             const alertDiv = document.createElement('div');
                             alertDiv.classList.add('alert');
                             alertDiv.innerHTML = `
@@ -187,6 +194,11 @@
                             alertDiv.addEventListener('click', () => showModal(mag, place, time, details, imageUrl));
 
                             alertsDiv.appendChild(alertDiv);
+
+                            // Automatically show modal for the most recent earthquake
+                            if (index === 0) {
+                                showModal(mag, place, time, details, imageUrl);
+                            }
                         }
                     });
                 });

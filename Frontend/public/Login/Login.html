@@ -26,29 +26,6 @@
     </div>
     <script src="index.js"></script>
     <script>
-//         document.getElementById('login-form').addEventListener('submit', async function(e) {
-//     e.preventDefault();
-    
-//     const email = document.getElementById('login-email').value;
-//     const password = document.getElementById('login-password').value;
-    
-//     const response = await fetch('/login', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ email, password })
-//     });
-
-//     const data = await response.json();
-    
-//     if (response.ok) {
-//         alert('Login successful');
-//         // Store the token (optional)
-//         localStorage.setItem('token', data.token);
-//         window.location.href = '/'; 
-//     } else {
-//         alert(data.error);
-//     }
-// });
 document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -71,7 +48,16 @@ document.getElementById('login-form').addEventListener('submit', async function(
         alert(data.error);
     }
 });
+window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const alertMessage = urlParams.get('alert');
 
+            if (alertMessage === 'please_login') {
+                alert('Please log in to continue.');
+            } else if (alertMessage === 'invalid_token') {
+                alert('Your session has expired. Please log in again.');
+            }
+        }
     </script>
 </body>
 </html>

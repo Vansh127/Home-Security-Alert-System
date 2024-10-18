@@ -42,16 +42,17 @@ function isAuthenticated(req, res, next) {
     if (token) {
         jwt.verify(token, 'your_jwt_secret', (err, decoded) => {
             if (err) {
-                return res.redirect('/login'); // Invalid token
+                return res.redirect('/login?alert=invalid_token'); // Invalid token
             } else {
                 req.userId = decoded.id; // Attach the user ID to the request
                 next(); // Proceed to the next middleware
             }
         });
     } else {
-        res.redirect('/login'); // Redirect to login if no token found
+        res.redirect('/login?alert=please_login'); // Redirect to login if no token found with query parameter
     }
 }
+
 
 // Routes for static pages
 app.get('/', (req, res) => {
